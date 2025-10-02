@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивный Манифест ФНС 2030</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Приложение структурировано не по главам документа, а по четырем ключевым тематическим принципам: «Доверие и Эффективность», «Безопасность и Поддержка», «Открытость и Развитие», «Команда и Будущее». Такой подход позволяет пользователю нелинейно исследовать философию Манифеста через интерактивные вкладки. Это более увлекательно, чем простое чтение, и способствует лучшему усвоению идей. Центральный интерактивный элемент визуализирует концепцию «нулевых издержек», делая абстрактную идею понятной и осязаемой. -->
+    <!-- Visualization & Content Choices: 
+        1. Основные тезисы -> Цель: Информирование и создание атмосферы -> Метод: Крупная типографика и цитаты в текстовых блоках -> Взаимодействие: Нет -> Обоснование: Фокусирует внимание на ключевых сообщениях Манифеста.
+        2. Ключевые принципы -> Цель: Организация контента и навигация -> Метод: Интерактивная система вкладок (кнопки) -> Взаимодействие: Клик для переключения между разделами -> Обоснование: Разбивает Манифест на логические, легко усваиваемые блоки, позволяя пользователю самому выбирать порядок изучения.
+        3. Концепция "Издержек" (Время, Деньги, Эмоции) -> Цель: Визуализация абстрактной идеи -> Метод: Интерактивные карточки на HTML/CSS -> Взаимодействие: Наведение курсора для отображения пояснений -> Обоснование: Превращает текстовый список в запоминающийся интерактивный опыт, повышая вовлеченность.
+        4. Мотивационный генератор (Gemini LLM) -> Цель: Демонстрация живого применения принципов Манифеста -> Метод: Кнопка-триггер, текстовый результат -> Взаимодействие: Клик для вызова API и получения уникального лозунга -> Обоснование: Усиливает тему 'Команды' и 'Будущего', используя генеративный ИИ.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5F5F4;
+            color: #1C1917;
+        }
+        .tab-btn.active {
+            background-color: #0c4a6e;
+            color: #ffffff;
+            font-weight: 700;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .tab-btn {
+            transition: all 0.3s ease-in-out;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .cost-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .cost-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .cost-card .cost-card-info {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .cost-card:hover .cost-card-info {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="min-h-screen flex flex-col">
+        <header class="bg-white shadow-sm sticky top-0 z-10">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-sky-900">Манифест ФНС: Перспектива 2030</h1>
+                <p class="text-sm text-stone-600 mt-1">Интерактивное исследование ключевых принципов</p>
+            </div>
+        </header>
+
+        <main class="flex-grow">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+                
+                <section class="text-center bg-white p-6 md:p-8 rounded-xl shadow-md border border-stone-200">
+                    <h2 class="text-xl md:text-2xl font-semibold text-stone-800">«Налоги — это мои и наши инвестиции в общее будущее»</h2>
+                    <p class="mt-4 max-w-3xl mx-auto text-stone-600">
+                        Это приложение представляет ключевые идеи «Манифеста ФНС 2030». Здесь вы можете в интерактивном режиме познакомиться с видением будущего налоговой службы, основанном на доверии, безопасности и открытости.
+                    </p>
+                </section>
+
+                <section id="core-principles" class="mt-10 md:mt-16">
+                    <h3 class="text-2xl md:text-3xl font-bold text-center text-sky-900 mb-8">Ключевые принципы Манифеста</h3>
+                    <div id="tabs-container" class="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-8">
+                        <button data-tab="trust" class="tab-btn active w-full text-center p-3 md:p-4 rounded-lg bg-white shadow-sm border border-stone-200 font-medium text-sky-800 hover:bg-sky-100">Доверие и Эффективность</button>
+                        <button data-tab="security" class="tab-btn w-full text-center p-3 md:p-4 rounded-lg bg-white shadow-sm border border-stone-200 font-medium text-sky-800 hover:bg-sky-100">Безопасность и Поддержка</button>
+                        <button data-tab="openness" class="tab-btn w-full text-center p-3 md:p-4 rounded-lg bg-white shadow-sm border border-stone-200 font-medium text-sky-800 hover:bg-sky-100">Открытость и Развитие</button>
+                        <button data-tab="team" class="tab-btn w-full text-center p-3 md:p-4 rounded-lg bg-white shadow-sm border border-stone-200 font-medium text-sky-800 hover:bg-sky-100">Команда и Будущее</button>
+                    </div>
+
+                    <div id="tabs-content" class="bg-white p-6 md:p-8 rounded-xl shadow-md border border-stone-200 min-h-[20rem]">
+                        <div id="trust-content" class="tab-content active">
+                            <h4 class="text-xl font-bold text-sky-800 mb-4">100% взаимное доверие и 0% издержек</h4>
+                            <p class="text-stone-600 mb-4">Тратить время на заполнение деклараций, расчёт и уплату налогов — это вчерашний день. Чтобы сохранить самый ценный ресурс — время, необходимо создать среду, в которой Служба и налогоплательщики взаимопредсказуемы и доверяют друг другу.</p>
+                            <blockquote class="border-l-4 border-sky-300 pl-4 italic text-stone-700">
+                                Мы создаём системы, сервисы и услуги, чтобы максимально снизить наши общие издержки.
+                            </blockquote>
+                        </div>
+                        <div id="security-content" class="tab-content">
+                            <h4 class="text-xl font-bold text-sky-800 mb-4">Гарантии безопасности</h4>
+                             <p class="text-stone-600 mb-4">Мы ценим каждого налогоплательщика! Если он знает, что его бизнес в безопасности, что ему не грозит нечестная конкуренция или несправедливые претензии государства, тогда он может уверенно планировать своё будущее, а значит инвестировать в будущее всего общества.</p>
+                            <blockquote class="border-l-4 border-sky-300 pl-4 italic text-stone-700">
+                                Мы стараемся помочь каждому, даже если это не относится к нашим непосредственным обязанностям.
+                            </blockquote>
+                        </div>
+                        <div id="openness-content" class="tab-content">
+                             <h4 class="text-xl font-bold text-sky-800 mb-4">Открытость к диалогу</h4>
+                             <p class="text-stone-600 mb-4">Нам есть чем гордиться, но дальнейшее развитие невозможно без критики и обратной связи. К ней нужно быть готовым, сохраняя уважение к себе и налогоплательщику. Мы этого добились, потому что изучали опыт наших коллег и наших налогоплательщиков.</p>
+                             <blockquote class="border-l-4 border-sky-300 pl-4 italic text-stone-700">
+                                Не скрывать свои ошибки, а исправлять и выяснять, как избежать их в будущем.
+                            </blockquote>
+                        </div>
+                         <div id="team-content" class="tab-content">
+                             <h4 class="text-xl font-bold text-sky-800 mb-4">Команда — ключ к успеху</h4>
+                             <p class="text-stone-600 mb-4">Решение сложных задач потребует максимум усилий от каждого. Нам предстоит поменять себя и подходы к нашей работе. Служба развивается благодаря команде единомышленников, где каждый любит своё дело и является профессионалом.</p>
+                             <blockquote class="border-l-4 border-sky-300 pl-4 italic text-stone-700 mb-6">
+                                Но самое главное — все это невозможно без настоящих профессионалов своего дела.
+                            </blockquote>
+
+                            <!-- GEMINI LLM INTEGRATION -->
+                            <div class="mt-8 pt-6 border-t border-stone-200">
+                                <h5 class="text-lg font-semibold text-stone-700 mb-3">✨ Генератор мотивационных сообщений</h5>
+                                <p class="text-sm text-stone-500 mb-4">
+                                    Нажмите кнопку, чтобы сгенерировать вдохновляющий лозунг для команды ФНС, основанный на принципах Манифеста о необходимости изменений и профессионализма.
+                                </p>
+                                <button id="generate-motto-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-150 ease-in-out">
+                                    Создать лозунг для команды ✨
+                                </button>
+                                <div id="loading-indicator" class="hidden mt-4 text-sky-600 font-semibold">
+                                    Загрузка...
+                                </div>
+                                <div id="motivational-result" class="mt-4 p-4 bg-sky-50 border border-sky-200 rounded-lg text-lg text-sky-900 font-medium italic hidden">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="costs-visualization" class="mt-10 md:mt-16">
+                    <div class="text-center mb-8">
+                         <h3 class="text-2xl md:text-3xl font-bold text-sky-900">Сохраняя ценные ресурсы</h3>
+                         <p class="mt-2 max-w-2xl mx-auto text-stone-600">
+                             Манифест подчеркивает важность сохранения ресурсов каждого человека. Наведите курсор на карточку, чтобы узнать, как ФНС стремится минимизировать издержки.
+                         </p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-6 md:gap-8">
+                        <div class="cost-card bg-white p-6 rounded-xl shadow-md border border-stone-200 text-center relative overflow-hidden">
+                             <div class="text-5xl mb-3">⏱️</div>
+                             <h4 class="text-lg font-bold text-sky-800">Время</h4>
+                             <div class="cost-card-info absolute inset-0 bg-sky-800 bg-opacity-95 p-6 flex items-center justify-center">
+                                <p class="text-white text-sm">Автоматизация расчетов и предзаполнение деклараций, чтобы у вас было больше времени на бизнес и жизнь.</p>
+                             </div>
+                        </div>
+                        <div class="cost-card bg-white p-6 rounded-xl shadow-md border border-stone-200 text-center relative overflow-hidden">
+                             <div class="text-5xl mb-3">💵</div>
+                             <h4 class="text-lg font-bold text-sky-800">Деньги</h4>
+                             <div class="cost-card-info absolute inset-0 bg-sky-800 bg-opacity-95 p-6 flex items-center justify-center">
+                                 <p class="text-white text-sm">Прозрачные правила и предсказуемость снижают риски штрафов и непредвиденных расходов.</p>
+                             </div>
+                        </div>
+                        <div class="cost-card bg-white p-6 rounded-xl shadow-md border border-stone-200 text-center relative overflow-hidden">
+                             <div class="text-5xl mb-3">😊</div>
+                             <h4 class="text-lg font-bold text-sky-800">Эмоции</h4>
+                             <div class="cost-card-info absolute inset-0 bg-sky-800 bg-opacity-95 p-6 flex items-center justify-center">
+                                 <p class="text-white text-sm">Снижение стресса от взаимодействия с госорганами через понятные сервисы и взаимное доверие.</p>
+                             </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <footer class="bg-white mt-12 border-t">
+             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm text-stone-500">
+                <p>&copy; 2025 Интерактивная визуализация на основе «Манифеста ФНС России. ПЕРСПЕКТИВА 2030».</p>
+             </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabsContainer = document.getElementById('tabs-container');
+            const tabsContent = document.getElementById('tabs-content');
+            
+            const tabButtons = tabsContainer.querySelectorAll('.tab-btn');
+            const tabContents = tabsContent.querySelectorAll('.tab-content');
+
+            tabsContainer.addEventListener('click', (event) => {
+                const targetButton = event.target.closest('.tab-btn');
+                if (!targetButton) return;
+
+                const tabId = targetButton.dataset.tab;
+
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                targetButton.classList.add('active');
+
+                tabContents.forEach(content => {
+                    if (content.id === `${tabId}-content`) {
+                        content.classList.add('active');
+                    } else {
+                        content.classList.remove('active');
+                    }
+                });
+            });
+
+            // GEMINI LLM LOGIC FOR MOTIVATIONAL MESSAGE GENERATION
+            const generateMottoBtn = document.getElementById('generate-motto-btn');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const resultDiv = document.getElementById('motivational-result');
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const systemPrompt = "Act as a corporate coach and inspirational speaker. Your task is to generate a single, concise, and highly motivational call-to-action (one sentence, maximum 15 words) for a team of tax professionals (ФНС) based on the principle of change and professionalism.";
+            const userQuery = "Создай вдохновляющее обращение (максимум 15 слов) к команде ФНС о необходимости изменений и высочайшего профессионализма для достижения целей 2030 года.";
+            
+            async function fetchWithBackoff(url, options, maxRetries = 5) {
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        const response = await fetch(url, options);
+                        if (response.status === 429 && i < maxRetries - 1) {
+                            const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            continue;
+                        }
+                        return response;
+                    } catch (error) {
+                        if (i === maxRetries - 1) throw error;
+                        const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+
+            async function generateMotivationalMessage() {
+                loadingIndicator.classList.remove('hidden');
+                resultDiv.classList.add('hidden');
+                resultDiv.textContent = '';
+                
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                try {
+                    const response = await fetchWithBackoff(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Ошибка генерации сообщения. Попробуйте еще раз.";
+                    
+                    resultDiv.textContent = text;
+                    resultDiv.classList.remove('hidden');
+
+                } catch (error) {
+                    resultDiv.textContent = `Ошибка: Не удалось подключиться к сервису LLM.`;
+                    resultDiv.classList.remove('hidden');
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                }
+            }
+
+            generateMottoBtn.addEventListener('click', generateMotivationalMessage);
+        });
+    </script>
+</body>
+</html>
