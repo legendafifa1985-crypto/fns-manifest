@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивная инструкция: Коллаж в Paint</title>
+    <!-- ОБНОВЛЕНЫ МЕТАДАННЫЕ ДЛЯ ПРЕВЬЮ В TELEGRAM / OPEN GRAPH -->
+    <meta property="og:title" content="Инструкция: Коллаж в Paint для новичков" />
+    <meta property="og:description" content="Пошаговое интерактивное руководство по созданию простого фотоколлажа с помощью стандартного редактора Paint." />
+    <meta property="og:type" content="website" />
+    <!-- *** САМОЕ ГЛАВНОЕ ИЗМЕНЕНИЕ: ССЫЛКА НА ЛОКАЛЬНЫЙ ФАЙЛ *** -->
+    <meta property="og:image" content="./collage-preview.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Subtle Blue Accent -->
+    <!-- Application Structure Plan: Я выбрал структуру пошагового "мастера" (wizard). Этот подход идеально подходит для обучающего контента, так как он разбивает процесс на небольшие, управляемые этапы. Пользователь может сосредоточиться на одной задаче за раз, что снижает когнитивную нагрузку и делает обучение более эффективным для новичков. Навигация с помощью кнопок "Далее" и "Назад" и наглядный индикатор прогресса создают интуитивно понятный и контролируемый пользователем опыт, что гораздо удобнее, чем прокрутка длинного документа. -->
+    <!-- Visualization & Content Choices: Поскольку исходный материал — это инструкция, а не данные, я не использую диаграммы. Вместо этого, я преобразую каждый шаг из отчета в отдельный "экран" в приложении. Цель: Обучить. Метод: Интерактивный пошаговый гид. Взаимодействие: Кнопки навигации и индикатор прогресса. Ключевые моменты, такие как "Прозрачное выделение", будут визуально акцентированы для привлечения внимания. Простые визуальные элементы для имитации интерфейса Paint созданы с помощью HTML и Tailwind CSS. Обоснование: Эта структура наилучшим образом соответствует цели обучения, делая процесс интерактивным и легким для восприятия. Библиотеки: Только Tailwind CSS и ванильный JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8; /* Very light warm neutral */
+            color: #4B4B4B;
+        }
+        .step-content-item {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .step-content-item.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar-step {
+            transition: all 0.4s ease-in-out;
+        }
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .highlight {
+            background-color: #E0F2FE; /* Light blue accent */
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .ui-simulation {
+            border: 1px solid #D1D5DB;
+            background-color: #F9FAFB;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+        .paint-canvas {
+            border: 2px dashed #9CA3AF;
+            background-color: white;
+            position: relative;
+            width: 100%;
+            height: 150px;
+        }
+        .resize-handle {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border: 1px solid #6B7280;
+            cursor: nwse-resize;
+        }
+        .paint-image {
+            border: 2px dotted #60A5FA;
+            background-color: #DBEAFE;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: #1E40AF;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <main class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-6 sm:p-10 border border-gray-200">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Создание коллажа в Paint</h1>
+            <p class="text-lg text-gray-500 mt-2">Интерактивное руководство для начинающих</p>
+        </header>
+
+        <div id="progress-bar" class="flex justify-between items-center mb-8">
+        </div>
+
+        <section id="content-container" class="bg-stone-50 p-6 rounded-lg min-h-[350px] relative">
+            <div id="step-content">
+            </div>
+        </section>
+
+        <nav class="flex justify-between items-center mt-8">
+            <button id="prev-btn" class="btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg">Назад</button>
+            <button id="next-btn" class="btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg">Далее</button>
+        </nav>
+
+    </main>
+
+    <script>
+        const steps = [
+            {
+                title: "Подготовка",
+                content: `
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Шаг 1: Подготовка изображений и запуск Paint</h2>
+                    <p class="mb-4">В этом разделе мы подготовим все необходимое для начала работы. Правильная подготовка — ключ к легкому и приятному творческому процессу.</p>
+                    <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                        <li><strong>Соберите фотографии:</strong> Найдите все изображения, которые хотите использовать, и поместите их в одну папку на вашем компьютере. Это значительно упростит их поиск и добавление.</li>
+                        <li><strong>Запустите Paint:</strong> Откройте меню "Пуск", введите в поиске "Paint" и запустите программу. Перед вами появится чистый белый холст.</li>
+                    </ol>
+                `
+            },
+            {
+                title: "Холст",
+                content: `
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Шаг 2: Настройка размера холста</h2>
+                    <p class="mb-4">Для коллажа нам понадобится много места. Давайте увеличим рабочую область, чтобы разместить все ваши фотографии без тесноты.</p>
+                    <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                        <li><strong>Найдите маркер изменения размера:</strong> В правом нижнем углу белого холста есть маленький квадратный маркер.</li>
+                        <li><strong>Растяните холст:</strong> Наведите на него курсор, пока он не превратится в диагональную стрелку. Зажмите левую кнопку мыши и потяните его вправо и вниз, чтобы увеличить холст. Не бойтесь сделать его слишком большим — лишнее мы всегда сможем обрезать в конце.</li>
+                    </ol>
+                    <div class="ui-simulation">
+                        <p class="text-sm font-medium text-center text-gray-600 mb-2">Пример холста в Paint</p>
+                        <div class="paint-canvas">
+                             <div class="resize-handle" title="Тяните за этот угол"></div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Первое фото",
+                content: `
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Шаг 3: Вставка первого изображения</h2>
+                    <p class="mb-4">Первое изображение задаст тон вашему коллажу. Оно может быть фоном или просто первым элементом композиции.</p>
+                    <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                       <li>На вкладке <strong>«Главная»</strong> нажмите на стрелку под иконкой <strong>«Вставить»</strong> и выберите пункт <span class="highlight">«Вставить из…»</span>.</li>
+                       <li>Найдите и выберите ваше первое изображение. Оно появится на холсте в рамке выделения.</li>
+                       <li><strong>Изменение размера:</strong> Если изображение слишком большое, потяните за маркеры по углам рамки, чтобы пропорционально его уменьшить.</li>
+                    </ol>
+                     <div class="ui-simulation flex justify-center items-center">
+                        <div class="paint-canvas flex justify-center items-center p-4">
+                            <div class="paint-image w-1/2 h-1/2">Ваше первое фото</div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                title: "Добавление",
+                content: `
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Шаг 4: Добавление следующих изображений</h2>
+                    <p class="mb-4">Это самый важный шаг. Чтобы изображения красиво накладывались друг на друга без белого фона, нужно включить специальную функцию.</p>
+                    <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                        <li><strong>Включите прозрачное выделение (ОЧЕНЬ ВАЖНО):</strong> На вкладке <strong>«Главная»</strong>, в блоке «Выделение», нажмите на стрелку и поставьте галочку напротив пункта <span class="highlight">«Прозрачное выделение»</span>.</li>
+                        <li><strong>Вставьте новое изображение:</strong> Снова используйте «Вставить» -> «Вставить из…» и выберите следующую фотографию.</li>
+                        <li><strong>Перемещайте и накладывайте:</strong> Пока новое изображение выделено, вы можете свободно перетаскивать его по холсту и размещать поверх других. Благодаря прозрачному выделению, белый фон вокруг него не будет виден.</li>
+                    </ol>
+                `
+            },
+            {
+                title: "Финал",
+                content: `
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Шаг 5: Добавление текста и украшений</h2>
+                    <p class="mb-4">Теперь, когда все фотографии на месте, давайте добавим финальные штрихи, чтобы сделать коллаж уникальным и завершенным.</p>
+                    <ul class="list-disc list-inside space-y-3 text-gray-700">
+                        <li><strong>Текст:</strong> Используйте инструмент «Текст» (иконка "А"), чтобы добавить подписи или заголовки.</li>
+                        <li><strong>Рисование:</strong> Инструменты «Кисти» и «Фигуры» помогут нарисовать рамки, стрелки или любые другие декоративные элементы.</li>
+                        <li><strong>Обрезка:</strong> Если по краям осталось лишнее белое пространство, выделите ваш коллаж с помощью инструмента «Выделение» и нажмите кнопку <span class="highlight">«Обрезать»</span>.</li>
+                    </ul>
+                `
+            },
+            {
+                title: "Сохранение",
+                content: `
+                    <h2 class="text-2xl font-bold text-blue-800 mb-4">Шаг 6: Сохранение коллажа</h2>
+                    <p class="mb-4">Отличная работа! Ваш коллаж почти готов. Осталось только сохранить его в виде одного файла изображения.</p>
+                     <ol class="list-decimal list-inside space-y-3 text-gray-700">
+                        <li>Нажмите <strong>«Файл»</strong> в верхнем левом углу, затем выберите <strong>«Сохранить как»</strong>.</li>
+                        <li>Выберите формат. Рекомендуется <strong>PNG</strong> для лучшего качества или <strong>JPEG</strong> для меньшего размера файла.</li>
+                        <li>Придумайте имя для вашего файла, выберите папку и нажмите «Сохранить».</li>
+                    </ol>
+                    <p class="mt-6 text-center text-lg font-semibold text-green-700">Поздравляем, ваш коллаж готов!</p>
+                `
+            }
+        ];
+
+        let currentStep = 0;
+
+        const progressBar = document.getElementById('progress-bar');
+        const stepContent = document.getElementById('step-content');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function renderProgressBar() {
+            progressBar.innerHTML = '';
+            steps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'progress-bar-step flex-1 text-center';
+                
+                const circle = document.createElement('div');
+                circle.className = `w-8 h-8 rounded-full mx-auto flex items-center justify-center font-bold border-2 ${index <= currentStep ? 'bg-blue-500 border-blue-500 text-white' : 'bg-white border-gray-300 text-gray-400'}`;
+                circle.textContent = index + 1;
+                
+                const title = document.createElement('p');
+                title.className = `text-xs mt-1 ${index <= currentStep ? 'text-blue-600 font-semibold' : 'text-gray-400'}`;
+                title.textContent = step.title;
+
+                stepElement.appendChild(circle);
+                stepElement.appendChild(title);
+
+                progressBar.appendChild(stepElement);
+
+                if (index < steps.length - 1) {
+                    const line = document.createElement('div');
+                    line.className = `flex-1 h-1 mt-[-28px] mb-[20px] mx-[-1px] ${index < currentStep ? 'bg-blue-500' : 'bg-gray-300'}`;
+                    progressBar.appendChild(line);
+                }
+            });
+        }
+
+        function renderContent() {
+            stepContent.innerHTML = '';
+            steps.forEach((step, index) => {
+                const contentItem = document.createElement('div');
+                contentItem.className = 'step-content-item';
+                if (index === currentStep) {
+                    contentItem.classList.add('active');
+                }
+                contentItem.innerHTML = step.content;
+                stepContent.appendChild(contentItem);
+            });
+            updateButtons();
+        }
+
+        function updateButtons() {
+            prevBtn.disabled = currentStep === 0;
+            nextBtn.disabled = currentStep === steps.length - 1;
+
+            if (currentStep === steps.length - 1) {
+                nextBtn.textContent = 'Завершить';
+            } else {
+                nextBtn.textContent = 'Далее';
+            }
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                renderProgressBar();
+                renderContent();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                renderProgressBar();
+                renderContent();
+            }
+        });
+
+        function init() {
+            renderProgressBar();
+            renderContent();
+        }
+
+        init();
+    </script>
+</body>
+</html>
